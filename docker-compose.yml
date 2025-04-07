@@ -1,0 +1,25 @@
+services:
+  api:
+    image: mvp-api-primary
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "8001:80"
+    volumes:
+      - .:/app
+
+  db:
+    image: postgres
+    restart: always
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD-SHELL", "-u", "${POSTGRES_USER}", "pg_isready" ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    ports:
+      - ${POSTGRES_PORT}:5432
